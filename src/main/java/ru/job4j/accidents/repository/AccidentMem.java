@@ -1,0 +1,36 @@
+package ru.job4j.accidents.repository;
+
+import org.springframework.stereotype.Repository;
+import ru.job4j.accidents.model.Accident;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Repository
+public class AccidentMem {
+    private static final AccidentMem INSTANCE = new AccidentMem();
+
+    private int nextId = 1;
+    private Map<Integer, Accident> accidents = new ConcurrentHashMap<>();
+
+    private AccidentMem() {
+        save(new Accident(0, "test", "test", "test"));
+        save(new Accident(0, "test1", "test1", "test1"));
+        save(new Accident(0, "test2", "test2", "test2"));
+    }
+
+    public static AccidentMem getInstance() {
+        return INSTANCE;
+    }
+
+    public Accident save(Accident accident) {
+        accident.setId(nextId++);
+        accidents.put(accident.getId(), accident);
+        return accident;
+    }
+
+    public Collection<Accident> findAll() {
+        return accidents.values();
+    }
+}
