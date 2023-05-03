@@ -11,13 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Repository
 public class AccidentTypeMem {
 
-    private static final AccidentTypeMem INSTANCE  = new AccidentTypeMem();
     private final AtomicInteger nextId = new AtomicInteger(1);
     private final Map<Integer, AccidentType> accidentsType = new ConcurrentHashMap<>();
-
-    public static AccidentTypeMem getInstance() {
-        return INSTANCE;
-    }
 
     public AccidentTypeMem() {
         save(new AccidentType(1, "Две машины"));

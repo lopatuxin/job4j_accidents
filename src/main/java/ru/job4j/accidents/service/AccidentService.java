@@ -11,13 +11,15 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class AccidentService {
-    private AccidentMem accidentMem;
+    private final AccidentMem accidentMem;
+    private final AccidentTypeService accidentTypeService;
 
     public Collection<Accident> findAll() {
         return accidentMem.findAll();
     }
 
-    public Accident save(Accident accident) {
+    public Accident save(Accident accident, int accidentId) {
+        accident.setAccidentType(accidentTypeService.getById(accidentId));
         return accidentMem.save(accident);
     }
 
