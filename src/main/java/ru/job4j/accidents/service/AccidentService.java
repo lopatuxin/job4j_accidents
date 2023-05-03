@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.repository.AccidentMem;
+import ru.job4j.accidents.repository.AccidentTypeMem;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -12,14 +13,14 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AccidentService {
     private final AccidentMem accidentMem;
-    private final AccidentTypeService accidentTypeService;
+    private final AccidentTypeMem accidentTypeMem;
 
     public Collection<Accident> findAll() {
         return accidentMem.findAll();
     }
 
     public Accident save(Accident accident, int accidentId) {
-        accident.setAccidentType(accidentTypeService.getById(accidentId));
+        accident.setAccidentType(accidentTypeMem.getById(accidentId));
         return accidentMem.save(accident);
     }
 
