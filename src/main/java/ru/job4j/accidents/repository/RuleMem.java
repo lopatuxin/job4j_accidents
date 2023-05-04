@@ -38,7 +38,7 @@ public class RuleMem {
 
     public Set<Rule> getSetRule(Set<String> rIds) {
         Set<Rule> rules = new HashSet<>();
-        for(String id : rIds) {
+        for (String id : rIds) {
             rules.add(findById(Integer.parseInt(id)));
         }
         return rules;
