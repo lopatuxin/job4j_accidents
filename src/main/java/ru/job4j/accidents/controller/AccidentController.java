@@ -7,22 +7,29 @@ import org.springframework.web.bind.annotation.*;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.service.AccidentService;
 import ru.job4j.accidents.service.AccidentTypeService;
+import ru.job4j.accidents.service.RuleService;
+
+import java.util.Set;
 
 @Controller
 @AllArgsConstructor
 public class AccidentController {
     private final AccidentService accidentService;
     private final AccidentTypeService accidentTypeService;
+    private final RuleService ruleService;
 
     @GetMapping("/createAccident")
     public String viewCreateAccident(Model model) {
         model.addAttribute("types", accidentTypeService.getAll());
+        model.addAttribute("rules", ruleService.getAll());
         return "createAccident";
     }
 
     @PostMapping("/saveAccident")
-    public String save(@ModelAttribute Accident accident, @RequestParam("type.id") String id) {
-        accidentService.save(accident, Integer.parseInt(id));
+    public String save(@ModelAttribute Accident accident,
+                       @RequestParam("type.id") String id,
+                       @RequestParam(required = false) Set<String> rIds) {
+        accidentService.save(accident, Integer.parseInt(id), rIds);
         return "redirect:/index";
     }
 
