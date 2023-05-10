@@ -11,12 +11,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
-public class RuleMem {
+public class RuleMem implements RuleRepository {
 
     private final AtomicInteger nextId = new AtomicInteger(1);
     private final Map<Integer, Rule> rules = new ConcurrentHashMap<>();
 
-    private RuleMem() {
+    public RuleMem() {
         save(new Rule(1, "Статья. 1"));
         save(new Rule(2, "Статья. 2"));
         save(new Rule(3, "Статья. 3"));
@@ -34,6 +34,11 @@ public class RuleMem {
 
     public Collection<Rule> getAll() {
         return rules.values();
+    }
+
+    @Override
+    public Set<Rule> getSetRule(int id) {
+        return null;
     }
 
     public Set<Rule> getSetRule(Set<String> rIds) {

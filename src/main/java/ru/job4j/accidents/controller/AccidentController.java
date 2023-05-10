@@ -5,23 +5,25 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.accidents.model.Accident;
-import ru.job4j.accidents.service.AccidentService;
-import ru.job4j.accidents.service.AccidentTypeService;
-import ru.job4j.accidents.service.RuleService;
+import ru.job4j.accidents.model.AccidentType;
+import ru.job4j.accidents.service.AccidentServiceJdbc;
+import ru.job4j.accidents.service.AccidentTypeSimpleService;
+import ru.job4j.accidents.service.RuleSimpleService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 
 @Controller
 @AllArgsConstructor
 public class AccidentController {
-    private final AccidentService accidentService;
-    private final AccidentTypeService accidentTypeService;
-    private final RuleService ruleService;
+    private final AccidentServiceJdbc accidentSimpleService;
+    private final AccidentTypeSimpleService accidentTypeSimpleService;
+    private final RuleSimpleService ruleSimpleService;
 
     @GetMapping("/createAccident")
     public String viewCreateAccident(Model model) {
-        model.addAttribute("types", accidentTypeService.getAll());
-        model.addAttribute("rules", ruleService.getAll());
+        model.addAttribute("types", accidentTypeSimpleService.getAll());
+        model.addAttribute("rules", ruleSimpleService.getAll());
         return "createAccident";
     }
 
@@ -29,24 +31,26 @@ public class AccidentController {
     public String save(@ModelAttribute Accident accident,
                        @RequestParam("type.id") String id,
                        @RequestParam(required = false) Set<String> rIds) {
-        accidentService.save(accident, Integer.parseInt(id), rIds);
+        accidentSimpleService.save(accident, Integer.parseInt(id), rIds);
         return "redirect:/index";
     }
 
     @GetMapping("/{id}")
     public String viewEditAccident(Model model, @PathVariable int id) {
-        var accidentOptional = accidentService.findById(id);
+        var accidentOptional = accidentSimpleService.findById(id);
         if (accidentOptional.isEmpty()) {
             model.addAttribute("message", "Вакансия с указанным идентификатором не найдена");
             return "errors/404";
         }
         model.addAttribute("accident", accidentOptional.get());
+        model.addAttribute("types",
+                accidentTypeSimpleService.getById(accidentOptional.get().getAccidentType().getId()));
         return "editAccident";
     }
 
     @PostMapping("/updateAccident")
-    public String update(@ModelAttribute Accident accident) {
-        accidentService.update(accident);
+    public String update(@ModelAttribute Accident accident, @RequestParam("id") int id) {
+        accidentSimpleService.update(accident, id);
         return "redirect:/index";
     }
 }

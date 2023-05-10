@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
-public class AccidentTypeMem {
+public class AccidentTypeMem implements AccidentTypeRepository {
 
     private final AtomicInteger nextId = new AtomicInteger(1);
     private final Map<Integer, AccidentType> accidentsType = new ConcurrentHashMap<>();
@@ -20,16 +20,19 @@ public class AccidentTypeMem {
         save(new AccidentType(3, "Машина и велосипед"));
     }
 
+    @Override
     public AccidentType save(AccidentType accidentType) {
         accidentType.setId(nextId.incrementAndGet());
         accidentsType.put(accidentType.getId(), accidentType);
         return accidentType;
     }
 
+    @Override
     public Collection<AccidentType> getAll() {
         return accidentsType.values();
     }
 
+    @Override
     public AccidentType getById(int id) {
         return accidentsType.get(id);
     }

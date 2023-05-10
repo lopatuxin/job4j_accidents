@@ -1,10 +1,11 @@
-package ru.job4j.accidents.service;
+package ru.job4j.accidents.repository;
 
 import ru.job4j.accidents.model.AccidentType;
 
 import java.util.Collection;
 
-public interface AccidentTypeService {
+public interface AccidentTypeRepository {
+
     AccidentType save(AccidentType accidentType);
 
     Collection<AccidentType> getAll();

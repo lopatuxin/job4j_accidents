@@ -13,13 +13,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
-public class AccidentMem {
+public class AccidentMem implements AccidentRepository {
     private static final AccidentMem INSTANCE = new AccidentMem();
 
     private final AtomicInteger nextId = new AtomicInteger(1);
     private Map<Integer, Accident> accidents = new ConcurrentHashMap<>();
 
-    private AccidentMem() {
+    public AccidentMem() {
         save(new Accident(0, "test", "test", "test", new AccidentType(1, "test"),
                 Set.of(new Rule(1, "test"))));
         save(new Accident(0, "test1", "test1", "test1", new AccidentType(2, "test1"),
@@ -38,6 +38,11 @@ public class AccidentMem {
         return accident;
     }
 
+    @Override
+    public Accident save(Accident accident, int typeId, Set<String> rIds) {
+        return null;
+    }
+
     public Collection<Accident> findAll() {
         return accidents.values();
     }
@@ -46,14 +51,14 @@ public class AccidentMem {
         return Optional.ofNullable(accidents.get(id));
     }
 
-    public boolean update(Accident accident) {
-        return accidents.computeIfPresent(accident.getId(),
-                (id, oldAccident) ->
+    public void update(Accident accident, int id) {
+        accidents.computeIfPresent(id,
+                (idOld, oldAccident) ->
                 new Accident(oldAccident.getId(),
                         accident.getName(),
                         accident.getText(),
                         accident.getAddress(),
                         accident.getAccidentType(),
-                        accident.getRules())) != null;
+                        accident.getRules()));
     }
 }
