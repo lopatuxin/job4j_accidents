@@ -2,13 +2,13 @@ package ru.job4j.accidents.repository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.Accident;
+import ru.job4j.accidents.model.AccidentType;
 import ru.job4j.accidents.model.Rule;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
@@ -19,7 +19,31 @@ public class AccidentJdbcTemplate implements AccidentRepository {
 
     private final AccidentTypeJdbcRepository accidentTypeRepository;
 
-    private final RuleJdbcRepository ruleRepository;
+    private final RowMapper<Accident> accidentRowMapper = (resultSet, row) -> {
+        Accident accident = new Accident();
+        accident.setId(resultSet.getInt("aId"));
+        accident.setName(resultSet.getString("aName"));
+        accident.setText(resultSet.getString("aText"));
+        accident.setAddress("aAddress");
+        accident.setAccidentType(new AccidentType(
+                resultSet.getInt("tId"),
+                resultSet.getString("tName")));
+        return accident;
+    };
+
+    private final RowMapper<AccidentType> accidentTypeRowMapper = (resultSet, row) -> {
+        AccidentType accidentType = new AccidentType();
+        accidentType.setId(resultSet.getInt("tId"));
+        accidentType.setName(resultSet.getString("tName"));
+        return accidentType;
+    };
+
+    private final RowMapper<Rule> ruleRowMapper = (resultSet, row) -> {
+        Rule rule = new Rule();
+        rule.setId(resultSet.getInt("rId"));
+        rule.setName(resultSet.getString("rName"));
+        return rule;
+    };
 
     @Override
     public Accident save(Accident accident, int typeId, Set<String> rIds) {
@@ -38,29 +62,37 @@ public class AccidentJdbcTemplate implements AccidentRepository {
 
     @Override
     public Collection<Accident> findAll() {
-        return jdbc.query("select * from accidents",
-                (resultSet, row) -> new Accident(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("text"),
-                        resultSet.getString("address"),
-                        accidentTypeRepository.getById(resultSet.getInt("accident_type_id")),
-                        ruleRepository.getSetRule(resultSet.getInt("id"))
-                ));
+        List<Accident> accidents = jdbc.query(
+                "select a.id aId, a.name aName, a.text aText, a.address aAddress, "
+                        + "t.id tId, t.name tName "
+                        + "from accidents a "
+                        + "left join accident_type t "
+                        + "on a.accident_type_id = t.id", accidentRowMapper);
+        for (Accident accident : accidents) {
+            accident.setRules(new HashSet<>(jdbc.query(
+                    "select r.id rid, r.name rName from accidents a "
+                            + "left join accidents_rules ar on a.id = ar.accidents_id "
+                            + "left join rules r on r.id = ar.rules_id where a.id = ?",
+                    ruleRowMapper, accident.getId()
+            )));
+        }
+        return accidents;
     }
 
     @Override
     public Optional<Accident> findById(int id) {
-        return Optional.of(jdbc.query("select * from accidents where id = ?",
-                (rs, i) -> new Accident(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("text"),
-                        rs.getString("address"),
-                        accidentTypeRepository.getById(rs.getInt("accident_type_id")),
-                        ruleRepository.getSetRule(rs.getInt("id"))
-                ), id).stream()
-                .findAny().orElse(new Accident()));
+        Accident accident = jdbc.queryForObject("select a.id aId, "
+                + "a.name aName, a.text aText, a.address aAddress, t.id tId, t.name tName "
+                + "from accidents a "
+                + "left join accident_type t on a.accident_type_id = t.id "
+                + "where a.id = ?", accidentRowMapper, id);
+        List<Rule> rules = jdbc.query(
+                "select r.id rid, r.name rName from accidents a "
+                        + "left join accidents_rules ar on a.id = ar.accidents_id "
+                        + "left join rules r on r.id = ar.rules_id where a.id = ?",
+                ruleRowMapper, id);
+        accident.setRules(new HashSet<>(rules));
+        return Optional.ofNullable(accident);
     }
 
     @Override
