@@ -2,6 +2,7 @@ package ru.job4j.accidents.repository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.job4j.accidents.model.Accident;
@@ -45,6 +46,28 @@ public class AccidentJdbcTemplate implements AccidentRepository {
         return rule;
     };
 
+    private final ResultSetExtractor<Map<Integer, Accident>> extractor = (resultSet) -> {
+        Map<Integer, Accident> result = new HashMap<>();
+        while (resultSet.next()) {
+            Accident accident = new Accident(
+                    resultSet.getInt("aId"),
+                    resultSet.getString("aName"),
+                    resultSet.getString("aText"),
+                    resultSet.getString("aAddress"),
+                    new AccidentType(
+                            resultSet.getInt("tId"),
+                            resultSet.getString("tName")),
+                    new HashSet<>()
+            );
+            result.putIfAbsent(accident.getId(), accident);
+            result.get(accident.getId()).addRule(new Rule(
+                    resultSet.getInt("rId"),
+                    resultSet.getString("rName")
+            ));
+        }
+        return result;
+    };
+
     @Override
     public Accident save(Accident accident, int typeId, Set<String> rIds) {
         jdbc.update("insert into accidents (name, text, address, accident_type_id) values(?, ?, ?, ?)",
@@ -62,21 +85,16 @@ public class AccidentJdbcTemplate implements AccidentRepository {
 
     @Override
     public Collection<Accident> findAll() {
-        List<Accident> accidents = jdbc.query(
+        Collection<Accident> accidents = jdbc.query(
                 "select a.id aId, a.name aName, a.text aText, a.address aAddress, "
-                        + "t.id tId, t.name tName "
+                        + "t.id tId, t.name tName, "
+                        + "r.id rId, r.name rName "
                         + "from accidents a "
-                        + "left join accident_type t "
-                        + "on a.accident_type_id = t.id", accidentRowMapper);
-        for (Accident accident : accidents) {
-            accident.setRules(new HashSet<>(jdbc.query(
-                    "select r.id rid, r.name rName from accidents a "
-                            + "left join accidents_rules ar on a.id = ar.accidents_id "
-                            + "left join rules r on r.id = ar.rules_id where a.id = ?",
-                    ruleRowMapper, accident.getId()
-            )));
-        }
-        return accidents;
+                        + "join accident_type t "
+                        + "on a.accident_type_id = t.id "
+                        + "join accidents_rules ar on a.id = ar.accidents_id "
+                        + "join rules r on r.id = ar.rules_id", extractor).values();
+        return accidents.size() > 0 ? new ArrayList<>(accidents) : new ArrayList<>();
     }
 
     @Override

@@ -1,6 +1,6 @@
 INSERT INTO accidents(name, text, address, accident_type_id)
-VALUES('Угон', 'Угнали автомобиль', 'Москва', 2);
+VALUES('A man was shot down', 'Hit a man on a bicycle', 'Tver', 2);
 INSERT INTO accidents(name, text, address, accident_type_id)
-VALUES('Сбит человек', 'Сбили человека на велосипеде', 'Тверь', 3);
+VALUES('Head-on collision', 'Collision of two cars', 'Moscow', 3);
 INSERT INTO accidents(name, text, address, accident_type_id)
-VALUES('Лобовое столкновение', 'Столкновение двух автомобилей', 'Москва', 1);
+VALUES('The mirror is broken', 'A passerby broke a mirror', 'Tver', 1);
