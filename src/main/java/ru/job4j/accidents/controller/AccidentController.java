@@ -5,18 +5,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.accidents.model.Accident;
-import ru.job4j.accidents.model.AccidentType;
-import ru.job4j.accidents.service.AccidentServiceJdbc;
+import ru.job4j.accidents.service.AccidentHbnService;
 import ru.job4j.accidents.service.AccidentTypeSimpleService;
 import ru.job4j.accidents.service.RuleSimpleService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 
 @Controller
 @AllArgsConstructor
 public class AccidentController {
-    private final AccidentServiceJdbc accidentSimpleService;
+    private final AccidentHbnService accidentSimpleService;
     private final AccidentTypeSimpleService accidentTypeSimpleService;
     private final RuleSimpleService ruleSimpleService;
 
