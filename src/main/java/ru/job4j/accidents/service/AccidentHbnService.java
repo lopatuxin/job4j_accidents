@@ -14,9 +14,13 @@ import java.util.Set;
 public class AccidentHbnService implements AccidentService {
 
     private final AccidentHibernate repository;
+    private final AccidentTypeSimpleService accidentTypeSimpleService;
+    private final RuleSimpleService ruleSimpleService;
 
     @Override
     public Accident save(Accident accident, int typeId, Set<String> rIds) {
+        accident.setAccidentType(accidentTypeSimpleService.getById(typeId));
+        accident.setRules(ruleSimpleService.getSetRules(rIds));
         return repository.save(accident, typeId, rIds);
     }
 
@@ -32,6 +36,9 @@ public class AccidentHbnService implements AccidentService {
 
     @Override
     public void update(Accident accident, int id) {
+        Accident oldAccident = findById(id).get();
+        accident.setAccidentType(oldAccident.getAccidentType());
+        accident.setRules(oldAccident.getRules());
         repository.update(accident, id);
     }
 }

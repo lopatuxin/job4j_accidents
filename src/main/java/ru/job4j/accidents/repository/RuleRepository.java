@@ -10,4 +10,6 @@ public interface RuleRepository {
     Set<Rule> getSetRule(int id);
 
     Collection<Rule> getAll();
+
+    Rule getById(int id);
 }

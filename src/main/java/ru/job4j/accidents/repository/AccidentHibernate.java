@@ -13,13 +13,9 @@ import java.util.Set;
 @AllArgsConstructor
 public class AccidentHibernate implements AccidentRepository {
     private final CrudRepository crudRepository;
-    private final AccidentTypeHibernate accidentTypeHibernate;
-    private final RuleHibernate ruleHibernate;
 
     @Override
     public Accident save(Accident accident, int typeId, Set<String> rIds) {
-        accident.setAccidentType(accidentTypeHibernate.getById(typeId));
-        accident.setRules(ruleHibernate.getSetRules(rIds));
         crudRepository.run(session -> session.save(accident));
         return accident;
     }
@@ -38,9 +34,6 @@ public class AccidentHibernate implements AccidentRepository {
 
     @Override
     public void update(Accident accident, int id) {
-        Accident oldAccident = findById(id).get();
-        accident.setAccidentType(oldAccident.getAccidentType());
-        accident.setRules(oldAccident.getRules());
         crudRepository.run(session -> session.update(accident));
     }
 }

@@ -25,6 +25,7 @@ public class RuleHibernate implements RuleRepository {
         return repository.query("from Rule", Rule.class);
     }
 
+    @Override
     public Rule getById(int id) {
         return repository.optional("from Rule where id = :fId",
                 Rule.class,

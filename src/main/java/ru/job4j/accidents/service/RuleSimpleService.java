@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Rule;
 import ru.job4j.accidents.repository.RuleHibernate;
-import ru.job4j.accidents.repository.RuleJdbcRepository;
-import ru.job4j.accidents.repository.RuleMem;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -23,6 +22,19 @@ public class RuleSimpleService implements RuleService {
     @Override
     public Collection<Rule> getAll() {
         return repository.getAll();
+    }
+
+    @Override
+    public Rule getById(int id) {
+        return repository.getById(id);
+    }
+
+    public Set<Rule> getSetRules(Set<String> rIds) {
+        Set<Rule> rules = new HashSet<>();
+        for (String id : rIds) {
+            rules.add(getById(Integer.parseInt(id)));
+        }
+        return rules;
     }
 
 }
