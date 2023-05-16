@@ -21,18 +21,18 @@ public class AccidentServiceData implements AccidentService {
     private final AccidentTypeRepositoryData accidentTypeRepositoryData;
     private final RuleRepositoryData ruleRepositoryData;
 
-    public Set<Rule> getSetRules(Set<String> rIds) {
-        Set<Rule> rules = new HashSet<>();
+    public Set<Integer> getIds(Set<String> rIds) {
+        Set<Integer> result = new HashSet<>();
         for (String id : rIds) {
-            rules.add(ruleRepositoryData.findById(Integer.parseInt(id)).get());
+            result.add(Integer.parseInt(id));
         }
-        return rules;
+        return result;
     }
 
     @Override
     public Accident save(Accident accident, int typeId, Set<String> rIds) {
         accident.setAccidentType(accidentTypeRepositoryData.findById(typeId).get());
-        accident.setRules(getSetRules(rIds));
+        accident.setRules(ruleRepositoryData.getSetRules(getIds(rIds)));
         return accidentRepositoryData.save(accident);
     }
 
