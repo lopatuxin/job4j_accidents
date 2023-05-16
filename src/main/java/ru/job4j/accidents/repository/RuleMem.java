@@ -37,6 +37,11 @@ public class RuleMem implements RuleRepository {
     }
 
     @Override
+    public Rule getById(int id) {
+        return rules.get(id);
+    }
+
+    @Override
     public Set<Rule> getSetRule(int id) {
         return null;
     }

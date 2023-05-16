@@ -13,13 +13,19 @@ import java.util.Set;
 public class RuleServiceData implements RuleService {
 
     private  final RuleRepositoryData repository;
+    private final AccidentServiceData accidentServiceData;
     @Override
     public Set<Rule> getSetRule(int id) {
-        return null;
+        return accidentServiceData.findById(id).get().getRules();
     }
 
     @Override
     public Collection<Rule> getAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Rule getById(int id) {
+        return repository.findById(id).get();
     }
 }

@@ -33,4 +33,10 @@ public class RuleJdbcRepository implements RuleRepository {
                         resultSet.getString("name")
                 ));
     }
+
+    @Override
+    public Rule getById(int id) {
+        return (Rule) jdbc.queryForObject(
+                "select * from rules where id = ?", new BeanPropertyRowMapper(Rule.class), id);
+    }
 }
