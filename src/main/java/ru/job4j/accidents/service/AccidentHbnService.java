@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.job4j.accidents.model.Accident;
 import ru.job4j.accidents.repository.AccidentHibernate;
+import ru.job4j.accidents.repository.AccidentTypeHibernate;
+import ru.job4j.accidents.repository.RuleHibernate;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -14,13 +16,13 @@ import java.util.Set;
 public class AccidentHbnService implements AccidentService {
 
     private final AccidentHibernate repository;
-    private final AccidentTypeSimpleService accidentTypeSimpleService;
-    private final RuleSimpleService ruleSimpleService;
+    private final AccidentTypeHibernate accidentTypeHibernate;
+    private final RuleHibernate ruleHibernate;
 
     @Override
     public Accident save(Accident accident, int typeId, Set<String> rIds) {
-        accident.setAccidentType(accidentTypeSimpleService.getById(typeId));
-        accident.setRules(ruleSimpleService.getSetRules(rIds));
+        accident.setAccidentType(accidentTypeHibernate.getById(typeId));
+        accident.setRules(ruleHibernate.getSetRules(rIds));
         return repository.save(accident, typeId, rIds);
     }
 

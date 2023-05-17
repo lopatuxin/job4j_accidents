@@ -33,10 +33,10 @@ public class RuleHibernate implements RuleRepository {
     }
 
     public Set<Rule> getSetRules(Set<String> rIds) {
-        Set<Rule> rules = new HashSet<>();
-        for (String id : rIds) {
-            rules.add(getById(Integer.parseInt(id)));
-        }
-        return rules;
+        return new HashSet<>(repository.query(
+                "from Rule where id in (:ids)",
+                Rule.class,
+                Map.of("ids", rIds)
+        ));
     }
 }

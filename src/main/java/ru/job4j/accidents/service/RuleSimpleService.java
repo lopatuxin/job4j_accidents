@@ -28,13 +28,4 @@ public class RuleSimpleService implements RuleService {
     public Rule getById(int id) {
         return repository.getById(id);
     }
-
-    public Set<Rule> getSetRules(Set<String> rIds) {
-        Set<Rule> rules = new HashSet<>();
-        for (String id : rIds) {
-            rules.add(getById(Integer.parseInt(id)));
-        }
-        return rules;
-    }
-
 }
