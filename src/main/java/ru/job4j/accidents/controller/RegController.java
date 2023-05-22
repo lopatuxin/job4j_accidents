@@ -27,11 +27,12 @@ public class RegController {
         user.setAuthority(authorities.findByAuthority("ROLE_USER"));
         try {
             users.save(user);
+            return "redirect:/login";
         } catch (DataIntegrityViolationException e) {
-            model.addAttribute("message", "Такой пользователь уже существует");
-            return "errors/404";
+            e.printStackTrace();
         }
-        return "redirect:/login";
+        model.addAttribute("message", "Такой пользователь уже существует");
+        return "errors/404";
     }
 
     @GetMapping("/reg")
