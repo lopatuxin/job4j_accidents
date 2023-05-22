@@ -12,9 +12,9 @@ import java.util.Set;
 @Controller
 @AllArgsConstructor
 public class AccidentController {
-    private final AccidentServiceData accidentSimpleService;
-    private final AccidentTypeServiceData accidentTypeSimpleService;
-    private final RuleServiceData ruleSimpleService;
+    private final AccidentHbnService accidentSimpleService;
+    private final AccidentTypeSimpleService accidentTypeSimpleService;
+    private final RuleSimpleService ruleSimpleService;
 
     @GetMapping("/createAccident")
     public String viewCreateAccident(Model model) {
